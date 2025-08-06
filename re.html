@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Reviews for J2B Academy</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .review-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background: #f1f1f1;
+        }
+
+        button {
+            background: #00c853;
+            color: #fff;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Suggested Reviews</h2>
+    <div id="reviews">⏳ Generating AI reviews...</div>
+
+    <script>
+        async function generateAIReviews() {
+            const container = document.getElementById("reviews");
+            container.innerHTML = "⏳ Generating reviews from local AI...";
+
+            try {
+                const response = await fetch("http://localhost:3000/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                const data = await response.json();
+
+                const reviewsText = (data?.text || "")
+                    .trim()
+                    .match(/\d\.\s(.+?)(?=(\d\.|$))/gs) || [];
+
+                const limitedReviews = reviewsText.slice(0, 3);
+                container.innerHTML = "";
+
+                limitedReviews.forEach(text => {
+                    const card = document.createElement("div");
+                    card.className = "review-card";
+                    card.innerHTML = `
+            <p>${text.replace(/^\d+\.\s*/, '').trim()}</p>
+            <button onclick="copyAndRedirect(this)">Copy & Redirect</button>
+          `;
+                    container.appendChild(card);
+                });
+
+                if (limitedReviews.length === 0) {
+                    container.innerHTML = "❌ No reviews generated. Try again.";
+                }
+
+            } catch (err) {
+                container.innerHTML = "❌ Failed to generate reviews.";
+                console.error(err);
+            }
+        }
+
+        function copyAndRedirect(button) {
+            const review = button.previousElementSibling.innerText;
+            navigator.clipboard.writeText(review).then(() => {
+                alert("✅ Review copied! Now paste it on Google.");
+                window.open("https://g.page/r/CZkOiiOy8C6XEAE/review", "_blank");
+            });
+        }
+
+        generateAIReviews();
+    </script>
+</body>
+
+</html>
