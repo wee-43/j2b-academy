@@ -28,11 +28,14 @@ app.post("/generate", async (req, res) => {
 You are a student at J2B Academy. Write 3 short and friendly Google reviews (3 lines each) using mixed Hindi-English.
 
 Focus on:
-- NSD/FTII experienced faculty
 - Positive experience
 - Acting career guidance
-- Prince sir
+- Prince pandey sir
+- Hostel 
 - Should join
+- Best tching faculty
+- Low fees
+- Real set for acting
 
 1. ...
 2. ...
@@ -56,9 +59,16 @@ Focus on:
         },
       }
     );
+    let text = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    const text =
-      response?.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    // Remove asterisks
+    text = text.replace(/\*/g, "");
+
+    // Remove emojis using regex
+    text = text.replace(
+      /([\u2700-\u27BF]|[\uE000-\uF8FF]|[\uD83C-\uDBFF\uDC00-\uDFFF])+/g,
+      ""
+    );
 
     res.json({ text });
   } catch (error) {
@@ -70,5 +80,7 @@ Focus on:
 // Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ J2B AI Server running with Gemini at http://localhost:${PORT}`);
+  console.log(
+    `✅ J2B AI Server running with Gemini at http://localhost:${PORT}`
+  );
 });
